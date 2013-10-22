@@ -21,13 +21,26 @@ def buildTrieFromWords(*words):
 	        parentKey = parentKey+letter      
     return trie
 
-	# def findMostMatchString (word, trie):
-	#     """Allowing mismatch 2"""
-	#     for k in trie.iterkeys():
-	#         if word.startswith(k):
-	#             if(trie[k]) != 0:
-	#                 return findMostMatchString(word,trie[k])
+def findMostMatchString (word, trie):
+    """Allowing mismatch 2"""   
+    mismatchString = ""
+    mismatchScore  = 9999
+  
+    for k in trie.iterkeys():
+        tempScore = findMismatchScore(word,k)
+        if tempScore <= mismatchScore:
+             mismatchScore = tempScore
+             mismatchString = k
+    if( len(trie[mismatchString]) == 0): 
+        #print mismatchString + ':score: ' + str(mismatchScore) 
+        return mismatchString,mismatchScore
+    else:
+        return findMostMatchString(word,trie[mismatchString])
 
+
+    # return mismatchString,mismatchScore 
+                
+	
 def searchQueryFromTrie(word,trie):
     """Recursively search an query from the trie, 
        return a tuple (result, score), 
@@ -44,13 +57,26 @@ def searchQueryFromTrie(word,trie):
                 return searchQueryFromTrie(word,trie[k])
             else:#End of trie
                 return k, findMismatchScore(word,k)
-        else: #find the mismatch number,  
+        # else: #find the mismatch number,  
+        #     tempScore = findMismatchScore(word,k)
+        #     if tempScore < mismatches:
+        #         mismatches = tempScore
+        #         mostMatchKey = k
+    #return mostMatchKey,mismatches
+    for k in trie.iterkeys():
+        if len(trie[k]) == 0 :
             tempScore = findMismatchScore(word,k)
             if tempScore < mismatches:
                 mismatches = tempScore
                 mostMatchKey = k
+        else: 
+            result = findMostMatchString(word,trie[k])
+            tempMatchString = result[0]
+            tempScore = result[1]
+            if tempScore <= mismatches :
+                mismatches = tempScore
+                mostMatchKey = tempMatchString
     return mostMatchKey,mismatches
-    #return findMostMatchString(word,trie[mostMatchKey])         
 
 
 def findMismatchScore(word,candidate):
@@ -69,9 +95,6 @@ def findMismatchScore(word,candidate):
 
 
     
-            
-            
-
 def searchByTrie(trie):
     """Read from query file and search each query from trie, output query, result and time"""
     f = open('surnames.txt')
@@ -84,8 +107,7 @@ def searchByTrie(trie):
         result = searchQueryFromTrie(word,trie)
         endTime   = time.time()
         usedTime  = endTime - startTime
-        if result != "NO":
-            print word + ': ' + result[0] + ' ' + str(result[1]) + ' ' + str(usedTime)
+        print word + ': ' + result[0] + ' ' + str(result[1]) + ' ' + str(usedTime)
         output.write(word + ': ' + result[0]  + ' ' + str(result[1]) + ' ' + str(usedTime) + '\n')
 
 

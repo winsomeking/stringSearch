@@ -16,7 +16,7 @@ import nltk,re, pprint,time
 
 def equal(char1, char2):
     """ Smith-Waterman algorithm/local edit distance
-       match = 1
+       match = 2
        mismatch = -1  
     """
     if char1 == char2:
@@ -27,13 +27,24 @@ def equal(char1, char2):
 def localEditDistance(query,word):
     # print len(query),len(word)
     matrix = [ [0 for elem in xrange(len(word)+1)] for elem in xrange(len(query)+1) ] 
+    maxI,maxJ = 0,0
+    highestScore = 0
     for i in xrange(1,len(query)+1):
         for j in xrange(1,len(word)+1):
             # print i,j
             matrix[i][j] = max(matrix[i-1][j]-1, matrix[i][j-1]-1,matrix[i-1][j-1] + equal(query[i-1],word[j-1]),0) 
             # print matrix[i][j]
+            if highestScore <= matrix[i][j]:
+                highestScore = matrix[i][j]
+                maxI = i
+                maxJ = j
+    #  Start trace back from matrix[maxI][maxJ]
+    #  Trace back
+    
 
 
+    return highestScore, word #localAlignString
+ 
 
 
 def buildTrieFromWords(*words):
@@ -133,17 +144,17 @@ def searchByTrie(trie):
 
 def searchByEditDistance(*words):
 
-    f = open('surnames.txt')
+    f = open('sur.txt')
     output = open('editDistanceOutput.txt','a')
     for line in f:
         query = line.strip()
-        localDistance = 9999
-        bestMatchKey = ""
+        localDistance = 0
+        bestMatchKey = "placeholder"
         for elem in words:
-            editDistance = localEditDistance(query,elem)
-            if editDistance <= localDistance:
-                localDistance = editDistance
-                bestMatchKey = elem        
+            result = localEditDistance(query,elem)
+            if result[0] >= localDistance:
+                localDistance = result[0]
+                bestMatchKey = result[1]        
         print query + ' : ' + bestMatchKey + ' ' + str(localDistance)
         output.write(query + ' : ' + bestMatchKey + ' ' + str(localDistance) + '\n') 
 
@@ -171,6 +182,8 @@ if __name__ == "__main__":
     trie = buildTrieFromWords(*tokens)
     #print trie
     #searchByTrie(trie)
+    #print "Searching from trie"
     searchByEditDistance(*tokens)
+    #print "Searching by edit distance"
        
      

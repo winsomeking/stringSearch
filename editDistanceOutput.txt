@@ -1,0 +1,34 @@
+aaby :   6
+aachen :   9
+aagaard :   9
+aagesen :   10
+aakerstreom :   10
+aalto :   8
+aam :   5
+aamer :   8
+aamoth :   8
+aanderud :   11
+aanerud :   8
+aarnio :   8
+aaron :   8
+aaronson :   9
+aarts :   8
+aartsen :   10
+aas :   6
+aaby : baby 6
+aachen : headacheshe 9
+aagaard : haggard 9
+aagesen : management 10
+aakerstreom : shoemakers 10
+aalto : altogether 8
+aam : himselfadame 5
+aamer : steamer 8
+aamoth : mother 8
+aanderud : wandered 11
+aanerud : wandered 8
+aarnio : harmoniously 8
+aaron : aron 8
+aaronson : explanationso 9
+aarts : hearts 8
+aartsen : apartments 10
+aas : teaassily 6

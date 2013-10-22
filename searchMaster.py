@@ -24,7 +24,7 @@ def buildTrieFromWords(*words):
 
 def searchQueryFromTrie(word,trie):
     """Recursively search an query from the trie"""
-    print word
+    # print word
     for k in trie.iterkeys():
         # print k
         if word == k:
@@ -45,22 +45,17 @@ def searchByTrie(trie):
     """Read from query file and search each query from trie, output query, result and time"""
     f = open('surnames.txt')
     output = open('outputNames.txt','a')
-    # startTime = time.time()
-    # result = searchQueryFromTrie("work",trie)
-    # endTime   = time.time()
-    # usedTime  = endTime - startTime
-    # print word ' : ' + result + ' ' + str(usedTime)
-    # output.write(result + ' ' + str(usedTime) + '\n')
-
     for line in f:
-        print line
+        # print line
         word = line.strip()
+        # print word
         startTime = time.time()
         result = searchQueryFromTrie(word,trie)
         endTime   = time.time()
         usedTime  = endTime - startTime
-        # print word + ' : ' result + ' ' + str(usedTime)
-        output.write(word + ' : ' + result + ' ' + str(usedTime))
+        if result != "NO":
+            print word + ': ' + result + ' ' + str(usedTime)
+        output.write(word + ': ' + result + ' ' + str(usedTime) + '\n')
 
 
 

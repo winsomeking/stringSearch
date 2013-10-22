@@ -3,11 +3,38 @@
 #
 
 """
-Reference: http://stackoverflow.com/questions/11015320/how-to-create-a-trie-in-python/11015381#11015381
+Reference: 1, http://stackoverflow.com/questions/11015320/how-to-create-a-trie-in-python/11015381#11015381
+           2, http://en.wikipedia.org/wiki/Levenshtein_distance
+           3, http://www.stanford.edu/class/cs124/lec/med.pdf
+           4, http://en.wikipedia.org/wiki/Trie
+           5, http://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm
 //FIX ME:
 """
 
 import nltk,re, pprint,time 
+
+
+def equal(char1, char2):
+    """ Smith-Waterman algorithm/local edit distance
+       match = 1
+       mismatch = -1  
+    """
+    if char1 == char2:
+        return  2
+    else:
+        return -1
+
+def localEditDistance(query,word):
+    # print len(query),len(word)
+    matrix = [ [0 for elem in xrange(len(word)+1)] for elem in xrange(len(query)+1) ] 
+    for i in xrange(1,len(query)+1):
+        for j in xrange(1,len(word)+1):
+            # print i,j
+            matrix[i][j] = max(matrix[i-1][j]-1, matrix[i][j-1]-1,matrix[i-1][j-1] + equal(query[i-1],word[j-1]),0) 
+            # print matrix[i][j]
+
+
+
 
 def buildTrieFromWords(*words):
     """Build a trie data structure from a list of words. A dictionary is used."""
@@ -57,12 +84,6 @@ def searchQueryFromTrie(word,trie):
                 return searchQueryFromTrie(word,trie[k])
             else:#End of trie
                 return k, findMismatchScore(word,k)
-        # else: #find the mismatch number,  
-        #     tempScore = findMismatchScore(word,k)
-        #     if tempScore < mismatches:
-        #         mismatches = tempScore
-        #         mostMatchKey = k
-    #return mostMatchKey,mismatches
     for k in trie.iterkeys():
         if len(trie[k]) == 0 :
             tempScore = findMismatchScore(word,k)
@@ -107,9 +128,28 @@ def searchByTrie(trie):
         result = searchQueryFromTrie(word,trie)
         endTime   = time.time()
         usedTime  = endTime - startTime
-        print word + ': ' + result[0] + ' ' + str(result[1]) + ' ' + str(usedTime)
+        #print word + ': ' + result[0] + ' ' + str(result[1]) + ' ' + str(usedTime)
         output.write(word + ': ' + result[0]  + ' ' + str(result[1]) + ' ' + str(usedTime) + '\n')
 
+def searchByEditDistance(*words):
+
+    f = open('surnames.txt')
+    output = open('editDistanceOutput.txt','a')
+    for line in f:
+        query = line.strip()
+        localDistance = 9999
+        bestMatchKey = ""
+        for elem in words:
+            editDistance = localEditDistance(query,elem)
+            if editDistance <= localDistance:
+                localDistance = editDistance
+                bestMatchKey = elem        
+        print query + ' : ' + bestMatchKey + ' ' + str(localDistance)
+        output.write(query + ' : ' + bestMatchKey + ' ' + str(localDistance) + '\n') 
+
+
+
+#    print bestMatchKey,localDistance
 
 if __name__ == "__main__":
     f = open('turgenev.txt')
@@ -127,24 +167,10 @@ if __name__ == "__main__":
     #output_file = open('processedFile.txt','w')
     #for w in tokens:
     #    output_file.write(w + '\n')
-    #print buildTrieFromWords(*tokens)
+    # print buildTrieFromWords(*tokens)
     trie = buildTrieFromWords(*tokens)
     #print trie
-    searchByTrie(trie)
-    
-"""
-def searchByEditDistance(query):
-   
-"""    
-
-
-
-
-
-
-
-
-      
-            
-
-
+    #searchByTrie(trie)
+    searchByEditDistance(*tokens)
+       
+     

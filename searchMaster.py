@@ -21,25 +21,56 @@ def buildTrieFromWords(*words):
 	        parentKey = parentKey+letter      
     return trie
 
+	# def findMostMatchString (word, trie):
+	#     """Allowing mismatch 2"""
+	#     for k in trie.iterkeys():
+	#         if word.startswith(k):
+	#             if(trie[k]) != 0:
+	#                 return findMostMatchString(word,trie[k])
 
 def searchQueryFromTrie(word,trie):
-    """Recursively search an query from the trie"""
-    # print word
+    """Recursively search an query from the trie, 
+       return a tuple (result, score), 
+       Score is the number of mismatch"""
+    #  For loop is trying to find a match, if reach the end of file,the most matched one is returned.
+    mostMatchKey = ""
+    mismatches = 9999
     for k in trie.iterkeys():
         # print k
         if word == k:
-            return k
+            return k,0
         elif word.startswith(k):
-            # print 'startswithk'
             if len(trie[k])!= 0:
-                # print 'recursiveCall'
                 return searchQueryFromTrie(word,trie[k])
-            else:
-                # print 'end of trie'
-                return "NO"
-    return "NO"    
+            else:#End of trie
+                return k, findMismatchScore(word,k)
+        else: #find the mismatch number,  
+            tempScore = findMismatchScore(word,k)
+            if tempScore < mismatches:
+                mismatches = tempScore
+                mostMatchKey = k
+    return mostMatchKey,mismatches
+    #return findMostMatchString(word,trie[mostMatchKey])         
 
 
+def findMismatchScore(word,candidate):
+    """return the mismatch of two strings"""
+    if len(word) > len(candidate):
+        while len(candidate) != len(word):
+            candidate = candidate + " "
+    if len(word) < len(candidate):
+        while len(candidate) != len(word):
+            word = word + " "
+    mismatch = 0
+    for v in xrange(0,len(word)):
+        if word[v] != candidate[v]:
+            mismatch = mismatch + 1
+    return mismatch   
+
+
+    
+            
+            
 
 def searchByTrie(trie):
     """Read from query file and search each query from trie, output query, result and time"""
@@ -54,12 +85,9 @@ def searchByTrie(trie):
         endTime   = time.time()
         usedTime  = endTime - startTime
         if result != "NO":
-            print word + ': ' + result + ' ' + str(usedTime)
-        output.write(word + ': ' + result + ' ' + str(usedTime) + '\n')
+            print word + ': ' + result[0] + ' ' + str(result[1]) + ' ' + str(usedTime)
+        output.write(word + ': ' + result[0]  + ' ' + str(result[1]) + ' ' + str(usedTime) + '\n')
 
-
-
-   
 
 if __name__ == "__main__":
     f = open('turgenev.txt')
